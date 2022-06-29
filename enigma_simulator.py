@@ -29,7 +29,7 @@ ALPHABET_LENGTH = 25
 class RotorType(Enum):
     ALPHA = 1 
     BETA = 2
-    GAMA = 3
+    GAMMA = 3
 
 
 class Rotor():
@@ -49,7 +49,7 @@ class Rotor():
         self.__offset = ord(start_letter) - ASCII_OFFSET
         self.__rotor_type = rotor_type
 
-    def increment(self):
+    def __increment(self):
         """Increaments the rotor offset, throws Exception if its not the alpha
         rotor."""
 
@@ -76,6 +76,7 @@ class Rotor():
         
         # If the input char, takes us beyond 25 adjust offset, as 'a' is equal
         # to 0
+        return_char = ''
         if char_pos + self.__offset > ALPHABET_LENGTH:
             pos_adjust = 0
             char_delta =  ALPHABET_LENGTH - char_pos
@@ -84,9 +85,11 @@ class Rotor():
             print(f'offset adjustment {offset_adjustment}')
             # todo: Check whether this logic is valid, and why we have to
             # subtract 1
-            return chr(ASCII_OFFSET + offset_adjustment - 1)
+            return_char = chr(ASCII_OFFSET + offset_adjustment - 1)
         else:
-            return chr(ASCII_OFFSET + char_pos + self.__offset)
+            return_char = chr(ASCII_OFFSET + char_pos + self.__offset)
+        self.__increment()
+        return return_char
 
 
 class Plugboard():
@@ -94,8 +97,36 @@ class Plugboard():
 
     def __init__(self):
         self.__letter_map = {}
-        
 
+    def set_mapping(self, mapping):
+        """Sets the letter mapping of the plug board.
+
+        :param mapping: The mapping of a key to another
+        """
+        if (not self.__validate):
+            raise Exception("Invalid plugboard mapping, tried to be set")
+        self.__letter_map = mapping
+        return self.__validate()
+
+    def __validate(self):
+        """Validates the plugboard mapping is valid."""
+        # Sanity checks
+        assert(type(mapping, dict))
+        alphabet_store = []
+        for [in_letter, out_letter] in iself.__letter_map:
+            if in_letter in alphabet_store or out_letter in alphabet_store:
+                return False
+            alphabet_store.append(in_letter)
+            alphabet_store.append(out_letter)
+        return True
+
+    def get_output(in_letter):
+        """Gets the result of the char passed to the plugboard.
+
+        :param in_letter: The letter entering the plugboard.
+        """
+        return self.__letter_map[in_letter]
+    
 
 # Clarifications:
 #   - Machine is based on a single stepping rotation
@@ -110,7 +141,26 @@ class EnigmaMachine():
     the rotor designs and pathways as shown 
     in reference 1
     """
+    def __init__(self, rotor_start_positions, plugboard_mapping):
+    
+        # Conceptually its quite confusing as the first rotor is the one on the
+        # right hand side of the machine, but this is considered as the
+        # 'first' rotor otherwise known as the alpha rotor
+        assert(type(rotor_start_positions) is tuple)
+        assert(len(rotor_start_positions) == 3)
+        
+        # Setting up the rotors of the machine
+        self.__rotor_a = Rotor(rotor_start_positions[0], RotorType.ALPHA)
+        self.__rotor_b = Rotor(rotor_start_positions[0], RotorType.BETA)
+        self.__rotor_g = Rotor(rotor_start_positions[0], RotorType.GAMMA)
 
+        self.__plugboard = Plugboard()
+
+    def set_plugboard_mapping(self, mapping):
+        # Basically wraps the setter of the plugboard
+        return self.__plugboard.set_mapping(mapping)
+    
+    def encrypt(self):
 
 
 # Driver testing code
