@@ -16,7 +16,7 @@ jobs:
     - name: Check-out devops repository
       uses: actions/checkout@v2
       with:
-        repository: jdl00/BuyBot
+        repository: jdl00/enigma-cracker
         token: ${{ secrets.GITHUB_TOKEN }}
         path: ${{ env.DEVOPS_DIR }}
     - uses: actions/setup-python@v4
