@@ -160,7 +160,37 @@ class EnigmaMachine():
         # Basically wraps the setter of the plugboard
         return self.__plugboard.set_mapping(mapping)
     
-    def encrypt(self):
+    def __encrypt_char(self, char):
+        """Encrypts a character based on the current settings.
+
+        :param char: Character to be encrypted
+        """
+        plain_char = char
+        # First pass from keyboard
+        plug_shift = self.__plugboard.get_output(plain_char)
+        a_rotor_shift = self.__rotor_a.get_shifted_value(plug_shift)
+        b_rotor_shift = self.__rotor_b.get_shifted_value(a_rotor_shift)
+        g_rotor_shift = self.__rotor_c.get_shifted_value(b_rotor_shift)
+
+        # Second pass from the reflector
+        g_rotor_shift = self.__rotor_c.get_shifted_value(g_rotor_shift)
+        b_rotor_shift = self.__rotor_b.get_shifted_value(g_rotor_shift)
+        a_rotor_shift = self.__rotor_a.get_shifted_value(b_rotor_shift)
+        return self.__plugboard.get_output(a_rotor_shift)
+
+    def encrypt(self, message):
+        """Encrypts the message by encrypting each character.
+
+        :param message: The message to be encrypted
+        """
+        
+        # Sanity checks
+        assert(type(message) is string)
+
+        for char in message:
+            self.__encrypt_char
+
+        
 
 
 # Driver testing code
