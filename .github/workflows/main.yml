@@ -1,0 +1,29 @@
+name: On Push Run
+
+on:   
+  push:
+    branches:
+      - main
+
+env:
+  DEVOPS_DIR: devops
+
+jobs:
+  setup_unit_tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check-out devops repository
+      uses: actions/checkout@v2
+      with:
+        repository: jdl00/BuyBot
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: ${{ env.DEVOPS_DIR }}
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10.4'
+        architecture: 'x64'
+
+    - name: Unit Tests
+      run: python ${{ env.DEVOPS_DIR }}/tests.py
+      shell: sh
