@@ -46,7 +46,7 @@ class Rotor():
 
         # The offset is the displacement from the start letter to a it should
         # only change, for the first rotor, as it's reflected back
-        self.__offset = ord(start_letter) - ASCII_OFFSET
+        self.__offset = ord(start_letter.lower()) - ASCII_OFFSET
         self.__rotor_type = rotor_type
 
     def __increment(self):
@@ -58,9 +58,6 @@ class Rotor():
         else:
             raise Exception (f'Attempted to increment invalid rotor:'\
                              f'{self.__rotor.name}')
-
-    def debug(self):
-        print(f'offset: {self.__offset}')
 
     def get_shifted_value(self, input_char):
         """Gets the output of the roto.
