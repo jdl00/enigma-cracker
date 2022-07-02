@@ -55,10 +55,7 @@ class Rotor():
 
         if self.__rotor_type is RotorType.ALPHA:
             self.__offset += 1
-        else:
-            raise Exception (f'Attempted to increment invalid rotor:'\
-                             f'{self.__rotor.name}')
-
+        
     def get_shifted_value(self, input_char):
         """Gets the output of the roto.
 
@@ -77,9 +74,7 @@ class Rotor():
         if char_pos + self.__offset > ALPHABET_LENGTH:
             pos_adjust = 0
             char_delta =  ALPHABET_LENGTH - char_pos
-            print(f'char delta: {char_delta}')
             offset_adjustment = self.__offset - char_delta
-            print(f'offset adjustment {offset_adjustment}')
             # todo: Check whether this logic is valid, and why we have to
             # subtract 1
             return_char = chr(ASCII_OFFSET + offset_adjustment - 1)
@@ -186,50 +181,3 @@ class EnigmaMachine():
 
         for char in message:
             self.__encrypt_char
-
-        
-
-
-# Driver testing code
-def main():
-    alpha_rotor = Rotor("k", RotorType.ALPHA)
-    for i in range(22):
-        print(alpha_rotor.get_shifted_value("c"))
-        alpha_rotor.increment()
-
-
-
-if __name__ == "__main__":
-    main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
