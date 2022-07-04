@@ -198,21 +198,3 @@ class EnigmaMachine():
 
         # Back through the plugboard to output the encrypted character
         return self.__plugboard.get_output(shifted_char)
-
-
-
-from json_handler import JsonHandler
-
-mapping = JsonHandler.load("plugboard_layout.json")
-
-machine = EnigmaMachine(('a','b','c'))
-machine.set_plugboard_mapping(mapping)
-print(machine.encrypt("hello"))
-
-machine = EnigmaMachine(('a','b','c'))
-machine.set_plugboard_mapping(mapping)
-print(machine.encrypt("klwah"))
-
-
-
-
