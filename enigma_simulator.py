@@ -103,6 +103,8 @@ class Plugboard():
     def __validate(self):
         """Validates the plugboard mapping is valid."""
         # Sanity checks
+        # Don't spend time optimising this, because it should only be called
+        # once, and its performance is trivial at best
         assert(type(mapping, dict))
         alphabet_store = []
         for [in_letter, out_letter] in iself.__letter_map:
@@ -181,3 +183,10 @@ class EnigmaMachine():
 
         for char in message:
             self.__encrypt_char
+    
+#enigma = EnigmaMachine(('a', 'b', 'c'), 
+
+
+
+
+
