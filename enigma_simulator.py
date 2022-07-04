@@ -95,26 +95,25 @@ class Plugboard():
 
         :param mapping: The mapping of a key to another
         """
-        if (not self.__validate):
-            raise Exception("Invalid plugboard mapping, tried to be set")
         self.__letter_map = mapping
         return self.__validate()
 
     def __validate(self):
         """Validates the plugboard mapping is valid."""
-        # Sanity checks
-        # Don't spend time optimising this, because it should only be called
-        # once, and its performance is trivial at best
-        assert(type(mapping, dict))
-        alphabet_store = []
-        for [in_letter, out_letter] in iself.__letter_map:
-            if in_letter in alphabet_store or out_letter in alphabet_store:
-                return False
-            alphabet_store.append(in_letter)
-            alphabet_store.append(out_letter)
+        # This validation is trivial at best, cause we can enter invalid keys
+        # of the right length to beat it, but given the plugboard mapping
+        # should be randomly generated for use its not important, to validate
+        # it to be robust
+        if len(self.__letter_map) != 26:
+            return False
+        alphabet_store = list(ascii_lowercase)
+        for key in self.__letter_map:
+            char = self.__letter_map[key]
+            try: alphabet_store.remove(char)
+            except: return False
         return True
 
-    def get_output(in_letter):
+    def get_output(self, in_letter):
         """Gets the result of the char passed to the plugboard.
 
         :param in_letter: The letter entering the plugboard.
@@ -135,7 +134,7 @@ class EnigmaMachine():
     the rotor designs and pathways as shown 
     in reference 1
     """
-    def __init__(self, rotor_start_positions, plugboard_mapping):
+    def __init__(self, rotor_start_positions):
     
         # Conceptually its quite confusing as the first rotor is the one on the
         # right hand side of the machine, but this is considered as the
@@ -151,26 +150,12 @@ class EnigmaMachine():
         self.__plugboard = Plugboard()
 
     def set_plugboard_mapping(self, mapping):
+        """Sets the plugboard mapping.
+
+        :param mapping: The mapping of the plug board
+        """
         # Basically wraps the setter of the plugboard
         return self.__plugboard.set_mapping(mapping)
-    
-    def __encrypt_char(self, char):
-        """Encrypts a character based on the current settings.
-
-        :param char: Character to be encrypted
-        """
-        plain_char = char
-        # First pass from keyboard
-        plug_shift = self.__plugboard.get_output(plain_char)
-        a_rotor_shift = self.__rotor_a.get_shifted_value(plug_shift)
-        b_rotor_shift = self.__rotor_b.get_shifted_value(a_rotor_shift)
-        g_rotor_shift = self.__rotor_c.get_shifted_value(b_rotor_shift)
-
-        # Second pass from the reflector
-        g_rotor_shift = self.__rotor_c.get_shifted_value(g_rotor_shift)
-        b_rotor_shift = self.__rotor_b.get_shifted_value(g_rotor_shift)
-        a_rotor_shift = self.__rotor_a.get_shifted_value(b_rotor_shift)
-        return self.__plugboard.get_output(a_rotor_shift)
 
     def encrypt(self, message):
         """Encrypts the message by encrypting each character.
@@ -179,13 +164,54 @@ class EnigmaMachine():
         """
         
         # Sanity checks
-        assert(type(message) is string)
-
+        assert(type(message) is str)
+        encrypted = ""
         for char in message:
-            self.__encrypt_char
-    
-#enigma = EnigmaMachine(('a', 'b', 'c'), 
+            encrypted = f'{encrypted}{self.__encrypt_char(char)}'
+        return encrypted
 
+
+    def __rotor_shift(self, char):
+        """Performs the rotor shifts on a character.
+
+        :param char: The character to be shifted
+        """
+        a_rotor_shift = self.__rotor_a.get_shifted_value(char)
+        b_rotor_shift = self.__rotor_b.get_shifted_value(a_rotor_shift)
+        return self.__rotor_g.get_shifted_value(b_rotor_shift)
+    
+    def __encrypt_char(self, char):
+        """Encrypts a character based on the current settings.
+
+        :param char: Character to be encrypted
+        """
+        plain_char = char
+       
+       # First pass from keyboard to plugboard
+        shifted_char = self.__plugboard.get_output(plain_char)
+        
+        # Plugboard output to the rotors
+        shifted_char = self.__rotor_shift(shifted_char)
+
+        # Second pass from the reflector
+        shifted_char = self.__rotor_shift(shifted_char)
+
+        # Back through the plugboard to output the encrypted character
+        return self.__plugboard.get_output(shifted_char)
+
+
+
+from json_handler import JsonHandler
+
+mapping = JsonHandler.load("plugboard_layout.json")
+
+machine = EnigmaMachine(('a','b','c'))
+machine.set_plugboard_mapping(mapping)
+print(machine.encrypt("hello"))
+
+machine = EnigmaMachine(('a','b','c'))
+machine.set_plugboard_mapping(mapping)
+print(machine.encrypt("klwah"))
 
 
 
