@@ -1,4 +1,5 @@
 from json import dump, load
+from os import path
 
 class JsonHandler():
     """Handles json operations including writing and loading."""
@@ -18,10 +19,24 @@ class JsonHandler():
         :param directory: The directory of the json, default to current
         directory
         """
-        # todo: fix this to allow directory
-        with open(f'{self.__name}.json', "w") as f:
+        if directory:
+            directory = fix_directory(directory)
+        
+        with open(f'{directory}{self.__name}.json', "w") as f:
             dump(self.__data, f, indent = 4)
 
+    @staticmethod
+    def fix_directory(directory):
+        """Fixes the directory pathing .
+
+        :param directory: The directory to be fixed
+        """
+        assert(type(directory) is str)
+        if directory[0] != "/":
+            directory = f'/{directory}'
+        if directory[-1] != "/":
+            directory = f'{directory}/'
+        return directory
 
     @staticmethod
     def load(name, directory = ""):
@@ -30,7 +45,10 @@ class JsonHandler():
         :param name: The name of the json to be loaded
         :param directory: The directory of where the json is
         """
+        if directory:
+            directory = fix_directory(directory)
+
         data = None
-        with open(f'{directory}/{name}', "r") as f:
+        with open(f'{directory}{name}', "r") as f:
             data = load(f)
         return data
